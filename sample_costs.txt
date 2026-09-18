@@ -1,0 +1,10 @@
+SAMPLE-01: cost=38365.00 BDT (reference=38365.00), total_grid=2692.50 kWh, peak=187.50 kWh
+SAMPLE-02: cost=42885.00 BDT (reference=42885.00), total_grid=2915.00 kWh, peak=180.00 kWh
+SAMPLE-03: cost=35480.00 BDT (reference=35480.00), total_grid=2430.00 kWh, peak=205.00 kWh
+SAMPLE-04: cost=40495.00 BDT (reference=40495.00), total_grid=2645.00 kWh, peak=225.00 kWh
+SAMPLE-05: cost=33950.00 BDT (reference=33950.00), total_grid=2430.00 kWh, peak=175.00 kWh
+SAMPLE-06: cost=34090.00 BDT (reference=34090.00), total_grid=2395.00 kWh, peak=175.00 kWh
+SAMPLE-07: cost=38550.00 BDT (reference=38550.00), total_grid=2560.00 kWh, peak=185.00 kWh
+SAMPLE-08: cost=37665.00 BDT (reference=37665.00), total_grid=2490.00 kWh, peak=210.00 kWh
+SAMPLE-09: cost=34873.00 BDT (reference=34873.00), total_grid=2504.00 kWh, peak=187.00 kWh
+SAMPLE-10: cost=41620.00 BDT (reference=41620.00), total_grid=2715.00 kWh, peak=190.00 kWh
