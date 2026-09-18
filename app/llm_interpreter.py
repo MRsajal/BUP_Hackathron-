@@ -83,7 +83,8 @@ Rules — every one matters:
    solar_reduction, minimum_battery_reserve, no_charge_window,
    no_discharge_window, max_grid_window, no_op
 3. If a note is irrelevant to today's 24-hour energy schedule (cafeteria menus,
-   weather chit-chat, personnel gossip, unrelated announcements), set:
+   weather chit-chat, personnel gossip, unrelated announcements, sports events,
+   next-month planning, HR notices), set:
      applies = false
      directive_type = "no_op"
      structured_adjustment = null
@@ -100,19 +101,62 @@ TIME WINDOW RULES (critical):
 - "2 AM until 5 AM"     -> [2, 3, 4]
 - "from 18:00 to 21:00" -> [18, 19, 20]
 - "between 10 AM and noon" -> [10, 11]
+- "10 AM to 4 PM"       -> [10, 11, 12, 13, 14, 15]
+- "starting at 3 PM for 2 hours" -> [15, 16]
+- "for the first 3 hours of the day" -> [0, 1, 2]
+- "overnight from 10 PM to 6 AM" -> [22, 23, 0, 1, 2, 3, 4, 5]  (wraps midnight)
 - hours must be UNIQUE integers 0..23, sorted ASCENDING.
+- 12 PM = noon = hour 12. 12 AM = midnight = hour 0.
 
-PERCENTAGE / FACTOR RULES (critical):
-- "factor" for solar_reduction means the FRACTION THAT REMAINS.
-- "80% reduction" -> factor = 0.2  (only 20% remains)
-- "solar drops to 20%" -> factor = 0.2
-- "roughly one-fifth of normal" -> factor = 0.2
-- "reduced by half" -> factor = 0.5
-- Factor is between 0 and 1.
+CRITICAL: All range-ending words are END-EXCLUSIVE, no matter which word is used.
+"until", "to", "through", "till", "up to", "before" — all mean the end hour is NOT included.
+  - "7 PM through 10 PM"    -> [19, 20, 21]     (NOT [19,20,21,22])
+  - "9 AM until 12 PM"      -> [9, 10, 11]      (NOT [9,10,11,12])
+  - "noon to 3 PM"          -> [12, 13, 14]     (NOT [12,13,14,15])
+When a note says "for X hours starting at Y", include exactly X consecutive hours starting at Y.
+When a note says "during the Nth hour" (singular), include only that one hour.
 
-RESERVE PERCENTAGES:
-- "keep at least 50% of battery capacity" with capacity 200 kWh -> minimum_energy_kwh = 100
-- Multiply the percentage by the battery capacity provided in the user message.
+FACTOR / PERCENTAGE RULES (very critical — misreading these loses points):
+
+The word "factor" for solar_reduction means the FRACTION THAT REMAINS after reduction.
+
+"Reduced TO X%" or "output drops TO X%" or "will be at X%" -> factor = X/100
+  - "solar drops to 20%"       -> factor = 0.2
+  - "output at 25% of normal"  -> factor = 0.25
+  - "remains at 15%"           -> factor = 0.15
+
+"Reduced BY X%" or "X% reduction" or "X% loss" -> factor = 1 - (X/100)
+  - "80% reduction"            -> factor = 0.2  (100 - 80 = 20% remains)
+  - "reduced by 40%"           -> factor = 0.6  (100 - 40 = 60% remains)
+  - "solar loses 75%"          -> factor = 0.25 (25% remains)
+
+Word fractions and phrases:
+  - "half of normal"           -> factor = 0.5
+  - "a quarter of normal"      -> factor = 0.25
+  - "one-fifth of normal"      -> factor = 0.2
+  - "two-thirds of normal"     -> factor = 0.667
+  - "roughly zero" or "near zero" -> factor = 0.0 (or 0.05 if "almost")
+
+When in doubt between "TO" and "BY", assume the note is describing the REMAINING output, not the amount lost. But if the words "reduction", "reduced by", "loss", "lost", "drop of" appear, treat as amount lost.
+
+RESERVE RULES:
+- "keep at least X kWh" -> minimum_energy_kwh = X (absolute number)
+- "keep at least X% of battery capacity" or "at least X% charged":
+    minimum_energy_kwh = (X/100) * battery_capacity_kwh
+    Example: capacity 200, "50% of capacity" -> 100
+- Reserve must never exceed the battery capacity provided in the user message.
+
+GRID CAP RULES:
+- "grid must not exceed X kWh" or "cap grid at X kWh" or "no more than X kWh from grid"
+  -> max_grid_kwh = X
+- "limit imports to X kWh" -> max_grid_kwh = X
+
+DISTRACTOR / NO_OP EXAMPLES (mark as no_op):
+- "The library will close early tomorrow."
+- "Payroll will process on the 5th."
+- "Rain is expected next week."  (not TODAY's weather affecting solar)
+- "The dean is visiting on Friday."
+- "IT will patch servers Sunday."
 
 DO NOT invent demand, tariff, solar values, battery limits, or unsupported directive types.
 DO NOT include any commentary outside the JSON object.
